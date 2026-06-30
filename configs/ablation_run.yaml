@@ -1,0 +1,59 @@
+experiment_name: "ablation_run"
+seed: 42
+
+# Data (matches existing data layout)
+data_path: "E:\\Moving\\数据制作\\仿真数据制作\\远场径向\\data_moving_1\\"
+seq_lens: [400, 1400]
+input_sizes: [5, 2]
+env_range: [1, 12]
+file_range: [1, 6]
+sample_num_str: "0005e3"
+test_size: 0.1
+val_size: 0.1
+batch_size: 512
+num_workers: 0
+
+# Denormalization constants
+range_min: -15068.0
+range_max: 15068.0
+vel_min: 1.0
+vel_max: 5.0
+
+# Model architecture (matches the full model in the paper)
+model_type: "full"
+target_seq_len: 400
+lstm_hiddens: [256, 128]
+d_model: 128
+nhead: 8
+num_layers: 1
+dim_feedforward: 256
+lstm_layers: 1
+bidirectional: true
+dropout: 0.2
+num_scalars: 2
+
+# Training
+num_epochs: 50
+learning_rate: 0.0001
+weight_decay: 0.01
+grad_clip: 0.5
+patience: 200
+scheduler_patience: 20
+save_every: 10
+
+# Loss weights
+seq_weight: 0.3
+scalar_weight: 0.8
+lambda_align: 0.1
+low_corr_threshold: 0.4
+high_corr_threshold: 0.6
+realistic_max_corr: 0.95
+soft_target: 0.92
+lambda_linear: 0.1
+lambda_soft: 0.02
+lambda_exceed: 0.5
+lambda_zero: 0.1
+ema_decay: 0.99
+use_corr_weighting: true
+use_align: true
+use_corr_dist: true

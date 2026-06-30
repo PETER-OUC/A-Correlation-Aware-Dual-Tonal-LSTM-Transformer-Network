@@ -1,0 +1,60 @@
+# Example training configuration for the proposed model.
+# Adjust paths and hyperparameters to match your local environment.
+
+experiment_name: "dual_tonal_lstm_transformer"
+seed: 42
+
+# Data
+data_path: "./data/simulation"
+seq_lens: [400, 1400]
+input_sizes: [5, 2]
+env_range: [1, 12]      # training environments
+file_range: [1, 6]      # files per environment
+sample_num_str: "0005e3"
+test_size: 0.1
+val_size: 0.1
+batch_size: 512
+num_workers: 4
+
+# Denormalization constants (must match generate_data.py / preprocess.py)
+range_min: -15068.0
+range_max: 15068.0
+vel_min: 1.0
+vel_max: 5.0
+
+# Model architecture
+model_type: "full"       # full | lstm_only | transformer_only | lstm_transformer_concat
+lstm_hiddens: [256, 128]
+d_model: 128
+nhead: 8
+num_layers: 1
+dim_feedforward: 256
+lstm_layers: 1
+bidirectional: true
+dropout: 0.2
+num_scalars: 2
+
+# Training
+num_epochs: 50
+learning_rate: 0.0001
+weight_decay: 0.01
+grad_clip: 0.5
+patience: 200
+scheduler_patience: 20
+
+# Loss weights
+seq_weight: 0.3
+scalar_weight: 0.8
+lambda_align: 0.1
+low_corr_threshold: 0.3
+high_corr_threshold: 0.7
+realistic_max_corr: 0.95
+soft_target: 0.92
+lambda_linear: 0.1
+lambda_soft: 0.02
+lambda_exceed: 0.5
+lambda_zero: 0.1
+ema_decay: 0.99
+use_corr_weighting: true
+use_align: true
+use_corr_dist: true
