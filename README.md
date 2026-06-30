@@ -10,7 +10,7 @@ Official implementation of the paper:
 >
 > Zhuo Chen, Dazhi Gao*, Kai Sun, Yueqi Yu, Ziwen Wang, Longfei Li  
 > Department of Marine Technology, Ocean University of China  
-> *Submitted to Ocean Engineering*
+
 
 ## Highlights
 
