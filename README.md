@@ -9,8 +9,7 @@ Official implementation of the paper:
 > **A Correlation-Aware Dual-Tonal LSTM-Transformer Network for Motion Parameter Inversion of Underwater Targets in Shallow-Water**
 >
 > Zhuo Chen, Dazhi Gao*, Kai Sun, Yueqi Yu, Ziwen Wang, Longfei Li  
-> Department of Marine Technology, Ocean University of China  
-
+> Department of Marine Technology, Ocean University of China
 
 ## Highlights
 
@@ -18,7 +17,7 @@ Official implementation of the paper:
 - **Physics-informed design**: Pearson correlation of predicted tonal power spectra is embedded in the network and used as a reliability indicator.
 - **Dual-branch LSTM-Transformer** hybrid encoder captures both local temporal dynamics and long-range interference dependencies.
 - **Gated residual fusion** dynamically balances acoustic-field features and physics-informed correlation features.
-- Trained purely on simulated data and validated on the **SWellEx-96 (SW96)** real-world experiment.
+- Trained purely on simulated data and validated on the **SWellEx-96 (SW96)** real-world experiment without fine-tuning.
 
 ## Repository Structure
 
@@ -26,16 +25,9 @@ Official implementation of the paper:
 .
 ├── train_ablation.py                  # Main entry: train full model & all ablation variants
 ├── predict_ablation.py                # Batch evaluation & visualization on SW96 data
-├── analyze_physical_overfitting.py    # Physical-overfitting analysis (optional)
-├── deprecated/
-│   ├── train_ablation_batch.py        # [DEPRECATED] old batch wrapper, incompatible with current train_ablation.py
-│   └── s                              # Personal notes / scratch file (not for publication)
 ├── model.py                           # Neural network architectures (full + baselines)
 ├── dataset.py                         # Simulation data loading / train-val-test split
 ├── losses.py                          # Multi-task loss with correlation constraints
-├── evaluate.py                        # Shared evaluation utilities
-├── fig_paper_architecture.py          # Generate paper architecture diagrams
-├── fig_paper_unified_no_scatter.py    # Generate unified result figures for paper
 ├── configs/
 │   ├── config.yaml                    # Example config for the full model
 │   └── ablation_run.yaml              # Config used for the ablation study
@@ -45,14 +37,9 @@ Official implementation of the paper:
 │   ├── merged_script.m                             # Baseline method + SW96 preprocessing demo
 │   └── merged_script_1.m                           # FDM velocity + dual-line spectrum figures
 ├── requirements.txt
-├── run_ablation_scheduled.bat        # Example Windows scheduler batch (edit paths before use)
-├── manuscript.tex                    # LaTeX source of the paper (optional)
-├── requirements.txt
 ├── LICENSE
 └── README.md
 ```
-
-> **Note on `train_ablation_batch.py`**: This file was written for an earlier version of the code and imports symbols (`AblationDualInputLSTMTransformer`, `AblationTrainer`, `device`, etc.) that no longer exist in `train_ablation.py`. It is kept only for archival reference and should **not** be used directly. Use `train_ablation.py --modes all` instead.
 
 ## Environment
 
@@ -201,16 +188,6 @@ predictions/ablation_run/
             └── SW96_{suffix}_best_model_results.xlsx
 ```
 
-### 4. Physical-Overfitting Analysis (Optional)
-
-```bash
-python analyze_physical_overfitting.py \
-  --checkpoint_dir checkpoints/ablation_run/ablation_full_YYYYMMDD_HHMMSS \
-  --sim_dir "/path/to/simulation_npy" \
-  --output_path predictions/physical_overfitting_sim_env12.png \
-  --csv_path predictions/physical_overfitting_sim_env12.csv
-```
-
 ## Model Architecture
 
 The proposed network consists of four modules:
@@ -225,43 +202,16 @@ The proposed network consists of four modules:
 4. **Gated residual fusion + scalar head**  
    Dynamically fuses global acoustic features with correlation features and outputs initial slant range and velocity.
 
-Run `python fig_paper_architecture.py` to regenerate the architecture diagrams.
-
 ## Results
 
 At a correlation threshold of `|ρ| = 0.9`:
 
 | Dataset | Initial Slant Range MAPE |
 |---------|--------------------------|
-| Simulation | ~5.5% |
-| SW96 real data | ~19% (down from ~129% for all samples) |
+| Simulation | ~5.8% |
+| SW96 real data | ~17.4% (down from ~103.6% for all samples) |
 
 See the paper for full experimental details.
-
-## Publishing to GitHub
-
-If this directory is not yet a git repository, run the following commands locally:
-
-```bash
-cd /path/to/Moving_E
-git init
-git add README.md LICENSE .gitignore requirements.txt \
-        train_ablation.py predict_ablation.py analyze_physical_overfitting.py \
-        model.py dataset.py losses.py evaluate.py \
-        fig_paper_architecture.py fig_paper_unified_no_scatter.py \
-        configs/ matlab/
-git commit -m "Initial release: correlation-aware dual-tonal motion inversion code"
-```
-
-Then create a new empty repository on GitHub and push:
-
-```bash
-git remote add origin https://github.com/<your_username>/<repo_name>.git
-git branch -M main
-git push -u origin main
-```
-
-Remember to **exclude** large data/model files. They are already ignored by `.gitignore`.
 
 ## Known Limitations & Missing Components
 
@@ -290,46 +240,41 @@ While the core training/inference pipeline and data-generation MATLAB scripts ar
 
 ## File Upload Checklist
 
-If you are preparing this repository for GitHub, the following files should be included:
+The following files have been included in this repository:
 
 ### Required Python source
-- [ ] `train_ablation.py`
-- [ ] `predict_ablation.py`
-- [ ] `model.py`
-- [ ] `dataset.py`
-- [ ] `losses.py`
-- [ ] `evaluate.py`
-- [ ] `configs/config.yaml`
-- [ ] `configs/ablation_run.yaml`
-- [ ] `requirements.txt`
+- [x] `train_ablation.py`
+- [x] `predict_ablation.py`
+- [x] `model.py`
+- [x] `dataset.py`
+- [x] `losses.py`
+- [ ] `evaluate.py` *(not yet included; shared evaluation utilities will be added in a future update)*
+- [x] `configs/config.yaml`
+- [x] `configs/ablation_run.yaml`
+- [x] `requirements.txt`
 
-### Optional / supplementary Python source
+### Optional / supplementary Python source *(not yet included)*
 - [ ] `analyze_physical_overfitting.py`
 - [ ] `fig_paper_architecture.py`
 - [ ] `fig_paper_unified_no_scatter.py`
 
-### Other useful files
-- [ ] `manuscript.tex` – LaTeX source of the paper.
-- [ ] `run_ablation_scheduled.bat` – Windows batch example for scheduled training; **edit paths before use**.
-
 ### MATLAB source (under `matlab/`)
-- [ ] `matlab/make_data_to_bin_par_fenkuai_paris_diff.m`
-- [ ] `matlab/generateFreqPairs.m`
-- [ ] `matlab/merged_script.m`
-- [ ] `matlab/merged_script_1.m`
+- [x] `matlab/make_data_to_bin_par_fenkuai_paris_diff.m`
+- [x] `matlab/generateFreqPairs.m`
+- [x] `matlab/merged_script.m`
+- [x] `matlab/merged_script_1.m`
 
 ### Repository metadata
-- [ ] `README.md`
-- [ ] `LICENSE`
-- [ ] `.gitignore`
+- [x] `README.md`
+- [x] `LICENSE`
+- [x] `.gitignore`
 
 ### Should be excluded
-- [ ] `__pycache__/`
-- [ ] `checkpoints/` (large model weights)
-- [ ] `predictions/` (generated figures/CSVs)
-- [ ] `data/` (large `.npy` / `.mat` files)
-- [ ] `*.log`
-- [ ] `deprecated/` (archival / scratch files, including old `train_ablation_batch.py` and personal notes)
+- [ ] `__pycache__/` *(git-ignored)*
+- [ ] `checkpoints/` *(large model weights, git-ignored)*
+- [ ] `predictions/` *(generated figures/CSVs, git-ignored)*
+- [ ] `data/` *(large `.npy` / `.mat` files, git-ignored)*
+- [ ] `*.log` *(git-ignored)*
 
 ## Citation
 
@@ -339,7 +284,7 @@ If you use this code, please cite:
 @article{chen2025correlation,
   title={A Correlation-Aware Dual-Tonal LSTM-Transformer Network for Motion Parameter Inversion of Underwater Targets in Shallow-Water},
   author={Chen, Zhuo and Gao, Dazhi and Sun, Kai and Yu, Yueqi and Wang, Ziwen and Li, Longfei},
-  journal={Ocean Engineering},
+  journal={Engineering Applications of Artificial Intelligence},
   year={2025}
 }
 ```
